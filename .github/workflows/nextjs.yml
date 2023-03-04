@@ -35,6 +35,7 @@ jobs:
         run: |
           npm i -g pnpm
           pnpm i
+          echo "manager=pnpm" >> $GITHUB_OUTPUT
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
