@@ -1,0 +1,36 @@
+---
+import { getCollection } from "astro:content";
+import PlannedPosts from "../components/planned-posts";
+import MainLayout from "../layouts/MainLayout.astro";
+
+// get all posts and remove the ones that are drafts or planned
+const allBlogPosts = (await getCollection("posts"))
+	.filter((post) => post.data.planned)
+	.filter((post) => !post.data.isDraft);
+
+const sortedPosts = allBlogPosts.sort(
+	(a, b) =>
+		Number(new Date(b.data.publishedAt)) - Number(new Date(a.data.publishedAt)),
+);
+---
+
+<MainLayout title="Plans">
+  <div
+    class="flex flex-col items-start justify-center max-w-2xl mx-auto mb-16 w-full"
+  >
+    <h1
+      class="mb-4 text-3xl font-bold tracking-tight text-black md:text-5xl dark:text-white"
+      transition:name="heading"
+    >
+      Plans
+    </h1>
+    <p class="mb-4 text-gray-600 dark:text-gray-400">
+      Exciting content is on the way! Here, you'll find a list of topics I'm
+      planning to write about, ranging from the basics of computer science to
+      more advanced and intriguing subjects. Stay tuned for updates and use the
+      search below to see if there’s something specific you’re looking forward
+      to.
+    </p>
+    <PlannedPosts client:only="react" sortedPosts={sortedPosts} />
+  </div>
+</MainLayout>

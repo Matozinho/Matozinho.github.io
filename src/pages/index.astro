@@ -1,0 +1,198 @@
+---
+import { Picture } from "astro:assets";
+import { getCollection } from "astro:content";
+import Avatar from "../assets/images/avatar.svg";
+// import AllTimeViews from "../components/AllTimeViews";
+import BlogPostCard from "../components/BlogPostCard.astro";
+import { FollowMeCard } from "../components/follow-me-card";
+import { Icons } from "../components/icons";
+import MainLayout from "../layouts/MainLayout.astro";
+
+const allBlogPosts = await getCollection("posts");
+// filter planned posts and get only the first 3
+const plannedPosts = allBlogPosts
+	.filter((post) => post.data.planned === true)
+	.slice(0, 3);
+// const sortedPosts = allBlogPosts.sort(
+//   (a, b) => Number(new Date(b.data.publishedAt)) - Number(new Date(a.data.date)),
+// );
+
+const colors = [
+	"from-[#D8B4FE] to-[#818CF8]",
+	"from-[#6EE7B7] via-[#3B82F6] to-[#9333EA]",
+	"from-[#FDE68A] via-[#FCA5A5] to-[#FECACA]",
+];
+
+const followMeCards = [
+	{
+		title: "Linkedin",
+		href: "https://www.linkedin.com/in/felipi-matozinho/",
+		description: "Linkedin profile",
+		icon: Icons.Linkedin,
+	},
+	{
+		title: "Github",
+		href: "https://github.com/matozinho",
+		description: "Follow me on github",
+		icon: Icons.Github,
+	},
+	{
+		title: "Twitter",
+		href: "https://x.com/matozinho_dev",
+		description: "Follow me on twitter",
+		icon: Icons.Twitter,
+	},
+];
+---
+
+<MainLayout>
+  <div
+    class="flex flex-col justify-center items-start max-w-2xl border-gray-200 dark:border-gray-700 mx-auto pb-16"
+  >
+    <div class="flex flex-col-reverse sm:flex-row items-start">
+      <div class="flex flex-col pr-8">
+        <h1
+          class="font-bold text-3xl md:text-5xl tracking-tight mb-1 text-black dark:text-white"
+          transition:name="heading"
+        >
+          Matozinho
+        </h1>
+        <h2 class="text-gray-700 dark:text-gray-200 mb-4">
+          Sharing my Passion for Coding and Innovative Problem-Solving.
+        </h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-16">
+          Empowering the Next Generation of Brazilian Developers with
+          Cutting-Edge Knowledge.
+        </p>
+      </div>
+      <div class="w-[80px] sm:w-[176px] relative mb-8 sm:mb-0 mr-auto">
+        <Picture
+          src={Avatar}
+          class="rounded-full"
+          alt="Dedsec"
+          formats={["avif", "webp"]}
+        />
+      </div>
+    </div>
+    <h3
+      class="mb-4 text-2xl font-bold tracking-tight text-black md:text-4xl dark:text-white"
+    >
+      Follow Me
+    </h3>
+    <div class="grid w-full grid-cols-1 gap-4 my-2 mt-4 sm:grid-cols-2 mb-8">
+      {followMeCards.map((card) => <FollowMeCard {...card} />)}
+      <!-- <AllTimeViews client:only="react" /> -->
+    </div>
+    <!-- <h3
+      class="font-bold text-2xl md:text-4xl tracking-tight mb-6 text-black dark:text-white"
+    >
+      Featured Posts
+    </h3>
+    <div class="flex gap-6 flex-col md:flex-row">
+      {
+        sortedPosts.slice(0, 3).map((post, key) => {
+          return (
+            <BlogPostCard
+              title={post.data.title}
+              slug={post.slug}
+              gradient={colors[key]}
+            />
+          );
+        })
+      }
+    </div> -->
+    <section class="flex flex-col gap-6 mb-8">
+      <div class="flex justify-between">
+        <h3
+          class="font-bold text-2xl md:text-4xl tracking-tight text-black dark:text-white"
+        >
+          Planned Posts
+        </h3>
+
+        <a
+          href="/plans"
+          class="flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-all"
+        >
+          see all
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            class="h-6 w-6 ml-1"
+          >
+            <path
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width={2}
+              d="M17.5 12h-15m11.667-4l3.333 4-3.333-4zm3.333 4l-3.333 4 3.333-4z"
+            ></path>
+          </svg>
+        </a>
+      </div>
+
+      <div class="flex gap-4">
+        {
+          plannedPosts.map((post) => (
+            <BlogPostCard
+              link={"/plans"}
+              title={post.data.title}
+              slug={post.slug}
+              gradient={colors[0]}
+            />
+          ))
+        }
+      </div>
+    </section>
+    <section class="flex flex-col w-full">
+      <div class="flex justify-between">
+        <h3
+          class="font-bold text-2xl md:text-4xl tracking-tight text-black dark:text-white"
+        >
+          Recent Posts
+        </h3>
+
+        <a
+          href="/posts"
+          class="flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-all"
+        >
+          see all
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            class="h-6 w-6 ml-1"
+          >
+            <path
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width={2}
+              d="M17.5 12h-15m11.667-4l3.333 4-3.333-4zm3.333 4l-3.333 4 3.333-4z"
+            ></path>
+          </svg>
+        </a>
+      </div>
+    </section>
+    <!-- <a
+      href="/blog"
+      class="flex items-center mt-8 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-all"
+    >
+      <span class="text-lg">Read all posts</span>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        class="h-6 w-6 ml-1"
+      >
+        <path
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width={2}
+          d="M17.5 12h-15m11.667-4l3.333 4-3.333-4zm3.333 4l-3.333 4 3.333-4z"
+        ></path>
+      </svg>
+    </a> -->
+  </div>
+</MainLayout>
