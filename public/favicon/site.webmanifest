@@ -1,7 +1,7 @@
 {
 	"name": "Matozinho",
-	"short_name": "0xdedinfosec.vercel.app",
-	"description": "I post My Hackthebox and Tryhackme writeups and other InfoSec findings here.",
+	"short_name": "matozinho-github-io.vercel.app",
+	"description": "Sharing my Passion for Coding and Problem-Solving.",
 	"icons": [
 		{
 			"src": "/favicon/android-chrome-192x192.png",
@@ -14,11 +14,10 @@
 			"type": "image/png"
 		}
 	],
-	"background_color": "#ffffff",
 	"theme_color": "#ffffff",
+	"background_color": "#ffffff",
 	"display": "standalone",
 	"dir": "ltr",
-	"lang": "en-US",
 	"orientation": "portrait-primary",
 	"start_url": "../../index.html"
 }

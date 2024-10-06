@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { formatViews } from "../lib/utils";
 
 const AllTimeViews = () => {
 	const [views, setViews] = useState<number | null>(null);
@@ -37,7 +36,7 @@ const AllTimeViews = () => {
 				All-Time Views
 			</h3>
 			<p className="mt-1 text-gray-700 dark:text-gray-400">
-				{views ? formatViews(views) : "-"}
+				{/* {views ? formatViews(views) : "-"} */}
 			</p>
 		</div>
 	);

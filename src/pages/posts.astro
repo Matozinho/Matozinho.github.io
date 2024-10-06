@@ -2,19 +2,20 @@
 import { getCollection } from "astro:content";
 import BlogPostWithSearch from "../components/BlogPostWithSearch";
 import MainLayout from "../layouts/MainLayout.astro";
+import type { BlogPost } from "@/content/config";
 
 // get all posts and remove the ones that are drafts or planned
 const allBlogPosts = (await getCollection("posts"))
 	.filter((post) => !post.data.planned)
 	.filter((post) => !post.data.isDraft);
 
-const sortedPosts = allBlogPosts.sort(
+const sortedPosts = allBlogPosts?.sort(
 	(a, b) =>
 		Number(new Date(b.data.publishedAt)) - Number(new Date(a.data.publishedAt)),
 );
 ---
 
-<MainLayout title="Blog">
+<MainLayout title="Posts">
   <div class="flex flex-col items-start justify-center max-w-2xl mx-auto mb-16">
     <h1
       class="mb-4 text-3xl font-bold tracking-tight text-black md:text-5xl dark:text-white"
@@ -27,6 +28,6 @@ const sortedPosts = allBlogPosts.sort(
       science to more advanced and intriguing topics. Feel free to explore and
       use the search below to find specific articles by title.
     </p>
-    <BlogPostWithSearch client:only="react" sortedPosts={sortedPosts} />
+    <BlogPostWithSearch client:only="react" sortedPosts={sortedPosts as unknown as BlogPost[]} />
   </div>
 </MainLayout>

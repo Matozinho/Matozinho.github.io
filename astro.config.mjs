@@ -23,7 +23,14 @@ const prettyCodeOptions = {
 // https://astro.build/config
 export default defineConfig({
 	site: "https://0xdedinfosec.vercel.app/",
-	integrations: [tailwind(), react(), mdx(), sitemap()],
+	integrations: [
+		tailwind({
+			applyBaseStyles: false,
+		}),
+		react(),
+		mdx(),
+		sitemap(),
+	],
 	markdown: {
 		syntaxHighlight: false,
 		extendDefaultPlugins: true,

@@ -3,27 +3,27 @@ import { Picture } from "astro:assets";
 import { getCollection } from "astro:content";
 import { format, parseISO } from "date-fns";
 import readingTime from "reading-time";
-import Avatar from "../../assets/images/avatar.png";
+import Avatar from "../../assets/images/avatar.svg";
 import BlogPostViews from "../../components/BlogPostViews";
 import GiscusComment from "../../components/GiscusComment";
 import MainLayout from "../../layouts/MainLayout.astro";
 
 export async function getStaticPaths() {
 	const blogsEntries = await getCollection("posts");
-	return blogsEntries.map((blog) => ({
-		params: { slug: blog.slug },
-		props: { blog },
+	return blogsEntries.map((post) => ({
+		params: { slug: post.slug },
+		props: { post },
 	}));
 }
 
-const { blog } = Astro.props;
-const { Content } = await blog.render();
+const { post } = Astro.props;
+const { Content } = await post.render();
 ---
 
 <MainLayout
-  title={blog.data.title}
-  description={blog.data.description}
-  ogImage={Astro.site + "images/hackthebox/" + blog.data.image}
+  title={post.data.title}
+  description={post.data.description}
+  ogImage={Astro.site + "images/hackthebox/" + post.data.image}
 >
   <article
     class="flex flex-col items-start justify-center w-full max-w-2xl mx-auto mb-16"
@@ -32,7 +32,7 @@ const { Content } = await blog.render();
       class="mb-4 text-3xl font-bold tracking-tight text-black md:text-5xl dark:text-white"
       transition:name="heading"
     >
-      {blog.data.title}
+      {post.data.title}
     </h1>
     <div
       class="flex flex-col items-start justify-between w-full mt-2 md:flex-row md:items-center"
@@ -46,15 +46,15 @@ const { Content } = await blog.render();
         />
         <p class="ml-2 text-sm text-gray-700 dark:text-gray-300">
           {"Matozinho / "}
-          {format(parseISO(blog.data.publishedAt.toISOString()), "MMMM dd, yyyy")}
+          {format(parseISO(post.data.publishedAt.toISOString()), "MMMM dd, yyyy")}
         </p>
       </div>
       <p class="mt-2 text-sm text-gray-600 dark:text-gray-400 min-w-32 md:mt-0">
-        {readingTime(blog.body).text}
+        {readingTime(post.body).text}
         {` • `}
         <BlogPostViews
           client:only="react"
-          slug={blog.slug}
+          slug={post.slug}
           className="views"
           increment
         />
@@ -62,23 +62,13 @@ const { Content } = await blog.render();
     </div>
     <div class="w-full mt-4 prose dark:prose-dark max-w-none break-words">
       <h2>Description</h2>
-      <p>{blog.data.description}</p>
+      <p>{post.data.description}</p>
       <Content />
     </div>
     <GiscusComment client:only="react" />
     <div class="text-sm text-gray-700 dark:text-gray-300">
       <a
-        href={`https://mobile.twitter.com/search?q=${encodeURIComponent(
-          `https://0xdedinfosec.vercel.app/blog/${blog.slug}`,
-        )}`}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        {"Discuss on Twitter"}
-      </a>
-      {` • `}
-      <a
-        href="https://github.com/0xdedinfosec/0xdedinfosec-astro"
+        href="https://github.com/matozinho/Matozinho.github.io"
         target="_blank"
         rel="noopener noreferrer"
       >

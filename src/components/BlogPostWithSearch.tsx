@@ -1,13 +1,34 @@
-import { useState } from "react";
-import BlogPostViews from "./BlogPostViews";
+import type { BlogPost } from "@/content/config";
+import { applyFilters, getFiltersList } from "@/lib/content-utils";
+import { useEffect, useState } from "react";
+import { Badge } from "./ui/badge";
 
-// biome-ignore lint/suspicious/noExplicitAny: I still don't the type
-const BlogPostWithSearch = ({ sortedPosts }: { sortedPosts: any }) => {
+const BlogPostWithSearch = ({ sortedPosts }: { sortedPosts: BlogPost[] }) => {
 	const [searchValue, setSearchValue] = useState("");
-	// biome-ignore lint/suspicious/noExplicitAny: I still don't the type
-	const filteredBlogPosts = sortedPosts.filter((post: any) =>
-		post.data.title.toLowerCase().includes(searchValue.toLowerCase()),
-	);
+	const [filters, setFilters] = useState<string[]>([]);
+	const [appliedFilters, setAppliedFilters] = useState<string[]>([]);
+
+	useEffect(() => {
+		(async () => {
+			const filters = await getFiltersList();
+			setFilters(
+				[...filters.tags, ...filters.categories].map((filter) => filter.name),
+			);
+		})();
+	}, []);
+
+	const handleFilter = (filter: string) => {
+		if (appliedFilters.includes(filter))
+			return setAppliedFilters(appliedFilters.filter((f) => f !== filter));
+
+		setAppliedFilters([...appliedFilters, filter]);
+	};
+
+	const filteredBlogPosts = applyFilters({
+		posts: sortedPosts,
+		appliedFilters,
+		searchTerm: searchValue,
+	});
 
 	return (
 		<>
@@ -34,6 +55,29 @@ const BlogPostWithSearch = ({ sortedPosts }: { sortedPosts: any }) => {
 					/>
 				</svg>
 			</div>
+			<div className="flex gap-2 overflow-auto w-full no-scrollbar">
+				{appliedFilters.map((filter, key) => (
+					<Badge
+						key={key}
+						onClick={() => handleFilter(filter)}
+						className="cursor-pointer whitespace-nowrap"
+					>
+						{filter}
+					</Badge>
+				))}
+				{filters
+					.filter((filter) => !appliedFilters.includes(filter))
+					.map((filter, key) => (
+						<Badge
+							variant="secondary"
+							className="cursor-pointer whitespace-nowrap"
+							key={key}
+							onClick={() => handleFilter(filter)}
+						>
+							{filter}
+						</Badge>
+					))}
+			</div>
 			<h3 className="mt-8 mb-4 text-2xl font-bold tracking-tight text-black md:text-4xl dark:text-white">
 				All Posts
 			</h3>
@@ -41,39 +85,20 @@ const BlogPostWithSearch = ({ sortedPosts }: { sortedPosts: any }) => {
 				<p className="mb-4 text-gray-600 dark:text-gray-400">No posts found.</p>
 			)}
 			{filteredBlogPosts.length > 0 &&
-				filteredBlogPosts.map(
-					(
-						post: {
-							slug: string;
-							data: {
-								title: string;
-								slug: string;
-								description: string;
-							};
-						},
-						key: number,
-					) => (
-						<a href={`/blog/${post.slug}`} className="w-full" key={key}>
-							<div className="w-full mb-8">
-								<div className="flex flex-col justify-between md:flex-row">
-									<h4 className="w-full mb-2 text-lg font-medium text-gray-900 md:text-xl dark:text-gray-100">
-										{post.data.title}
-									</h4>
-									<p className="w-32 mb-4 text-left text-gray-500 md:text-right md:mb-0">
-										<div className="flex items-center space-x-1">
-											{" "}
-											<BlogPostViews slug={post.slug} />
-											<span>views</span>
-										</div>
-									</p>
-								</div>
-								<p className="text-gray-600 dark:text-gray-400">
-									{post.data.description}
-								</p>
+				filteredBlogPosts.map((post, key) => (
+					<a href={`/blog/${post.slug}`} className="w-full" key={key}>
+						<div className="w-full mb-8">
+							<div className="flex flex-col justify-between md:flex-row">
+								<h4 className="w-full mb-2 text-lg font-medium text-gray-900 md:text-xl dark:text-gray-100">
+									{post.data.title}
+								</h4>
 							</div>
-						</a>
-					),
-				)}
+							<p className="text-gray-600 dark:text-gray-400">
+								{post.data.description}
+							</p>
+						</div>
+					</a>
+				))}
 		</>
 	);
 };

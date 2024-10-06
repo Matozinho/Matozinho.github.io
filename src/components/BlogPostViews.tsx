@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
-import { formatViews } from "../lib/utils";
 
 const BlogPostViews = ({
 	slug,
@@ -37,7 +36,7 @@ const BlogPostViews = ({
 			className={className ? className : "ml-2 align-baseline capsize"}
 			ref={ref}
 		>
-			{views ? formatViews(views) : "–––"}
+			{/* {views ? formatViews(views) : "–––"} */}
 		</span>
 	);
 };
