@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 const ScrollTopAndComment = () => {
 	const [show, setShow] = useState(false);
-	const regex = /^\/blog\//;
+	const regex = /^\/post\//;
 
 	useEffect(() => {
 		const handleWindowScroll = () => {

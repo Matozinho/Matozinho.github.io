@@ -86,7 +86,7 @@ const BlogPostWithSearch = ({ sortedPosts }: { sortedPosts: BlogPost[] }) => {
 			)}
 			{filteredBlogPosts.length > 0 &&
 				filteredBlogPosts.map((post, key) => (
-					<a href={`/blog/${post.slug}`} className="w-full" key={key}>
+					<a href={`/post/${post.slug}`} className="w-full" key={key}>
 						<div className="w-full mb-8">
 							<div className="flex flex-col justify-between md:flex-row">
 								<h4 className="w-full mb-2 text-lg font-medium text-gray-900 md:text-xl dark:text-gray-100">

@@ -7,6 +7,8 @@ import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypePrettyCode from "rehype-pretty-code";
 import rehypeSlug from "rehype-slug";
 import theme from "./dark-theme.json";
+import vercel from '@astrojs/vercel/serverless';
+
 const prettyCodeOptions = {
 	theme,
 	onVisitHighlightedLine(node) {
@@ -22,7 +24,11 @@ const prettyCodeOptions = {
 
 // https://astro.build/config
 export default defineConfig({
-	site: "https://0xdedinfosec.vercel.app/",
+	site: "https://matozinho-github-io.vercel.app/",
+	output: 'server',
+	adapter: vercel({
+    webAnalytics: { enabled: true }
+  }),
 	integrations: [
 		tailwind({
 			applyBaseStyles: false,

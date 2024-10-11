@@ -53,7 +53,7 @@ const PlannedPosts = ({ sortedPosts }: { sortedPosts: any }) => {
 							key: number,
 						) => (
 							<a
-								href={`/blog/${post.slug}`}
+								href={`/post/${post.slug}`}
 								className="w-full border border-gray-200 dark:border-gray-800 rounded-md p-3"
 								key={key}
 							>

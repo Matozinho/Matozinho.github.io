@@ -13,12 +13,12 @@ export async function GET(context: APIContext) {
 		title: "Matozinho's Blogs",
 		description:
 			"Welcome to my blog! Here you will find a collection of my thoughts, ideas, and projects.",
-		site: context.site || "https://0xdedinfosec.vercel.app",
+		site: context.site || "https://matozinho-github-io.vercel.app",
 		items: sortedPosts.map((post) => ({
 			title: post.data.title,
 			pubDate: post.data.publishedAt,
 			description: post.data.description,
-			link: `/blog/${post.slug}/`,
+			link: `/post/${post.slug}/`,
 		})),
 		customData: "<language>en-us</language>",
 	});
