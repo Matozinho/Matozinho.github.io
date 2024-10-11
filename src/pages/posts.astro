@@ -5,7 +5,7 @@ import MainLayout from "../layouts/MainLayout.astro";
 import type { BlogPost } from "@/content/config";
 
 // get all posts and remove the ones that are drafts or planned
-const allBlogPosts = (await getCollection("posts", ({})))
+const allBlogPosts = (await getCollection("posts"))
 	.filter((post) => !post.data.planned)
 	.filter((post) => !post.data.isDraft);
 
