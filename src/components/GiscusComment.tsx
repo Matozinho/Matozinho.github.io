@@ -18,14 +18,14 @@ export default function GiscusComment() {
 		<div className="mt-12 border-t pt-6 border-gray-200 dark:border-gray-800 w-full">
 			<Giscus
 				id="comments"
-				repo="DEDSEC-MAX/website-comments"
-				repoId="R_kgDOGZa4PA"
+				repo="Matozinho/Matozinho.github.io"
+				repoId="R_kgDOIJcaYg"
 				category="General"
-				categoryId="DIC_kwDOGZa4PM4CSgid"
+				categoryId="DIC_kwDOIJcaYs4CjRwm"
 				mapping="url"
-				term="Welcome to 0xDedinfosec comment!"
+				term="Welcome to Matozinho's blog comment!"
 				reactionsEnabled="1"
-				emitMetadata="0"
+				emitMetadata="1"
 				inputPosition="top"
 				theme={theme === "dark" ? "dark" : "light"}
 				lang="en"

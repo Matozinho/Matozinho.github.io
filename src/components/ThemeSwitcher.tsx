@@ -4,18 +4,31 @@ const ThemeSwitcher = () => {
 	const [theme, setTheme] = useState<boolean | string>(false);
 
 	useEffect(() => {
-		if (window.location !== undefined) {
-			const theme =
-				document.documentElement.attributes.getNamedItem("data-theme")?.value;
-			if (theme) {
-				setTheme(theme);
-			}
+		// Check the current theme on page load
+		const currentTheme =
+			document.documentElement.getAttribute("data-theme") || "dark";
+		setTheme(currentTheme);
+
+		// Apply the 'dark' class to body if current theme is dark
+		if (currentTheme === "dark") {
+			document.body.classList.add("dark");
+		} else {
+			document.body.classList.remove("dark");
 		}
-	}, [theme]);
+	}, []);
 
 	const changeTheme = () => {
 		const newTheme = theme === "dark" ? "light" : "dark";
+		// Set the new theme attribute on the HTML element
+		document.documentElement.setAttribute("data-theme", newTheme);
+		// Dispatch the theme change event for Astro Themes
 		document.dispatchEvent(new CustomEvent("set-theme", { detail: newTheme }));
+		// Toggle the 'dark' class on the body element
+		if (newTheme === "dark") {
+			document.body.classList.add("dark");
+		} else {
+			document.body.classList.remove("dark");
+		}
 		setTheme(newTheme);
 	};
 

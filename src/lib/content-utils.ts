@@ -1,12 +1,14 @@
 import { getCollection } from "astro:content";
 import isEmpty from "lodash.isempty";
 
-export async function getSortedPosts() {
-	const allBlogPosts = (
-		await getCollection("posts", ({ data }) => {
-			// return import.meta.env.PROD ? data.isDraft !== true : true;
-		})
-	).filter((post) => post.data.isDraft !== true);
+export async function getSortedPosts({
+	isDraft = false,
+	planned = false,
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+}: { isDraft?: boolean; planned?: boolean } = {}): Promise<any[]> {
+	const allBlogPosts = await getCollection("posts", ({ data }) => {
+		return data.isDraft === isDraft && data.planned === planned;
+	});
 
 	// Sort all posts by date
 	const sorted = allBlogPosts.sort((a, b) => {
@@ -65,7 +67,7 @@ export type Tag = {
 
 export async function getTagList(): Promise<Tag[]> {
 	const allBlogPosts = await getCollection("posts", ({ data }) => {
-		return import.meta.env.PROD ? data.isDraft !== true : true;
+		return data.isDraft !== true;
 	});
 
 	const countMap: { [key: string]: number } = {};
@@ -104,6 +106,7 @@ export function applyFilters({
 	appliedFilters,
 	searchTerm,
 }: {
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	posts: any[];
 	appliedFilters?: string[];
 	searchTerm?: string;
@@ -135,7 +138,7 @@ export function applyFilters({
 
 export async function getCategoryList(): Promise<Category[]> {
 	const allBlogPosts = await getCollection("posts", ({ data }) => {
-		return import.meta.env.PROD ? data.isDraft !== true : true;
+		return data.isDraft !== true;
 	});
 	const count: { [key: string]: number } = {};
 	allBlogPosts.map((post) => {
@@ -168,7 +171,7 @@ export type Series = {
 
 export async function getSeriesList(): Promise<Series[]> {
 	const allBlogPosts = await getCollection("posts", ({ data }) => {
-		return import.meta.env.PROD ? data.isDraft !== true : true;
+		return data.isDraft !== true;
 	});
 	const count: { [key: string]: number } = {};
 	allBlogPosts.map((post) => {

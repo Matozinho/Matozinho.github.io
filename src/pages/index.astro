@@ -1,47 +1,46 @@
 ---
 import { Picture } from "astro:assets";
 import { getCollection } from "astro:content";
-import Avatar from "../assets/images/avatar.svg";
-// import AllTimeViews from "../components/AllTimeViews";
+import { BlogPostCard } from "@/components/BlogPostCard";
 import { ArrowRight } from "@carbon/icons-react";
 import isEmpty from "lodash.isempty";
+import Avatar from "../assets/images/avatar.svg";
 import { FollowMeCard } from "../components/follow-me-card";
 import { Icons } from "../components/icons";
 import MainLayout from "../layouts/MainLayout.astro";
 import { getSortedPosts } from "../lib/content-utils";
-import { BlogPostCard } from "@/components/BlogPostCard";
 
 const allBlogPosts = await getCollection("posts");
 const sortedPosts = (await getSortedPosts()).slice(0, 3);
 const plannedPosts = allBlogPosts
-  .filter((post) => post.data.planned === true)
-  .slice(0, 3);
+	.filter((post) => post.data.planned === true)
+	.slice(0, 3);
 
 const colors = [
-  "from-[#D8B4FE] to-[#818CF8]",
-  "from-[#6EE7B7] via-[#3B82F6] to-[#9333EA]",
-  "from-[#FDE68A] via-[#FCA5A5] to-[#FECACA]",
+	"from-[#D8B4FE] to-[#818CF8]",
+	"from-[#6EE7B7] via-[#3B82F6] to-[#9333EA]",
+	"from-[#FDE68A] via-[#FCA5A5] to-[#FECACA]",
 ];
 
 const followMeCards = [
-  {
-    title: "Linkedin",
-    href: "https://www.linkedin.com/in/felipi-matozinho/",
-    description: "Linkedin profile",
-    icon: Icons.Linkedin,
-  },
-  {
-    title: "Github",
-    href: "https://github.com/matozinho",
-    description: "Follow me on github",
-    icon: Icons.Github,
-  },
-  // {
-  // 	title: "Twitter",
-  // 	href: "https://x.com/matozinho_dev",
-  // 	description: "Follow me on twitter",
-  // 	icon: Icons.Twitter,
-  // },
+	{
+		title: "Linkedin",
+		href: "https://www.linkedin.com/in/felipi-matozinho/",
+		description: "Linkedin profile",
+		icon: Icons.Linkedin,
+	},
+	{
+		title: "Github",
+		href: "https://github.com/matozinho",
+		description: "Follow me on github",
+		icon: Icons.Github,
+	},
+	{
+		title: "Twitter",
+		href: "https://x.com/matozinho_dev",
+		description: "Follow me on twitter",
+		icon: Icons.Twitter,
+	},
 ];
 ---
 
@@ -65,12 +64,12 @@ const followMeCards = [
         <Picture
           src={Avatar}
           class="rounded-full"
-          alt="Dedsec"
+          alt="Matozinho"
           formats={["avif", "webp"]}
         />
       </div>
     </div>
-    <div class="flex flex-col gap-6 lg:gap-8">
+    <div class="flex flex-col w-full gap-6 lg:gap-8">
       <section class="flex flex-col w-full gap-4 lg:gap-6">
         <h3
           class="text-2xl font-bold tracking-tight text-black md:text-4xl dark:text-white"

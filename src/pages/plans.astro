@@ -3,15 +3,7 @@ import { getCollection } from "astro:content";
 import PlannedPosts from "../components/planned-posts";
 import MainLayout from "../layouts/MainLayout.astro";
 
-// get all posts and remove the ones that are drafts or planned
-const allBlogPosts = (await getCollection("posts"))
-	.filter((post) => post.data.planned)
-	.filter((post) => !post.data.isDraft);
-
-const sortedPosts = allBlogPosts.sort(
-	(a, b) =>
-		Number(new Date(b.data.publishedAt)) - Number(new Date(a.data.publishedAt)),
-);
+const posts = await getCollection("posts", ({ data }) => data.planned);
 ---
 
 <MainLayout title="Plans">
@@ -31,6 +23,6 @@ const sortedPosts = allBlogPosts.sort(
       search below to see if there’s something specific you’re looking forward
       to.
     </p>
-    <PlannedPosts client:only="react" sortedPosts={sortedPosts} />
+    <PlannedPosts client:only="react" sortedPosts={posts} />
   </div>
 </MainLayout>
