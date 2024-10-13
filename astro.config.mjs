@@ -27,6 +27,7 @@ export default defineConfig({
 	site: "https://matozinho-github-io.vercel.app/",
 	output: 'server',
 	adapter: vercel({
+		imageService: { enabled: true },
     webAnalytics: { enabled: true }
   }),
 	integrations: [
