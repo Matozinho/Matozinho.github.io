@@ -66,9 +66,7 @@ export type Tag = {
 };
 
 export async function getTagList(): Promise<Tag[]> {
-	const allBlogPosts = await getCollection("posts", ({ data }) => {
-		return data.isDraft !== true;
-	});
+	const allBlogPosts = await getSortedPosts();
 
 	const countMap: { [key: string]: number } = {};
 	allBlogPosts.map((post) => {
@@ -137,9 +135,7 @@ export function applyFilters({
 }
 
 export async function getCategoryList(): Promise<Category[]> {
-	const allBlogPosts = await getCollection("posts", ({ data }) => {
-		return data.isDraft !== true;
-	});
+	const allBlogPosts = await getSortedPosts();
 	const count: { [key: string]: number } = {};
 	allBlogPosts.map((post) => {
 		if (!post.data.categories) {
