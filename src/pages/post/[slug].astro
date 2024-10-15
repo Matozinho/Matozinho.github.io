@@ -6,14 +6,17 @@ import readingTime from "reading-time";
 import Avatar from "../../assets/images/avatar.svg";
 import GiscusComment from "../../components/GiscusComment";
 import MainLayout from "../../layouts/MainLayout.astro";
+import { Badge } from "@/components/ui/badge";
+import { ChevronLeft, ChevronRight } from "@carbon/icons-react";
+import { getPostUrlBySlug } from "@/lib/url-utils";
 export const prerender = true;
 
 export async function getStaticPaths() {
-	const blogsEntries = await getCollection("posts");
-	return blogsEntries.map((post) => ({
-		params: { slug: post.slug },
-		props: { post },
-	}));
+  const blogsEntries = await getCollection("posts");
+  return blogsEntries.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
 }
 const { post } = Astro.props;
 const { Content } = await post.render();
@@ -45,18 +48,72 @@ const { Content } = await post.render();
         />
         <p class="ml-2 text-sm text-gray-700 dark:text-gray-300">
           {"Matozinho / "}
-          {format(parseISO(post.data.publishedAt.toISOString()), "MMMM dd, yyyy")}
+          {
+            format(
+              parseISO(post.data.publishedAt.toISOString()),
+              "MMMM dd, yyyy",
+            )
+          }
         </p>
       </div>
-      <p class="mt-2 text-sm text-end text-gray-600 dark:text-gray-400 min-w-32 md:mt-0">
+      <p
+        class="mt-2 text-sm text-end text-gray-600 dark:text-gray-400 min-w-32 md:mt-0"
+      >
         {readingTime(post.body).text}
       </p>
     </div>
-    <div class="w-full mt-4 prose dark:prose-invert max-w-none break-words">
+    <section class="flex w-full mt-3 justify-between">
+      <div class="flex gap-2">
+        {
+          post.data.categories.map((category) => (
+            <Badge className="cursor-pointer">{category}</Badge>
+          ))
+        }
+        {
+          post.data.tags.map((tag) => (
+            <Badge className="cursor-pointer">{tag}</Badge>
+          ))
+        }
+      </div>
+    </section>
+    <div class="w-full mt-2 prose dark:prose-invert max-w-none break-words">
       <h2>Description</h2>
       <p>{post.data.description}</p>
       <Content />
     </div>
+    {
+      (post.data.prevSlug || post.data.nextSlug) && (
+        <section class="mt-8 flex w-full gap-2 justify-between">
+          {post.data.prevSlug ? (
+            <a
+              href={getPostUrlBySlug(post.data.prevSlug)}
+              class="items-center flex gap-2 w-1/2 p-2 rounded-lg bg-background/60 hover:bg-foreground/5 transition-all duration-300" 
+            >
+              <ChevronLeft size={24} />
+              <span class="line-clamp-2 font-semibold">
+                {post.data.prevTitle}
+              </span>
+            </a>
+          ) : (
+            <div class="flex w-1/2" />
+          )}
+
+          {post.data.nextSlug ? (
+            <a
+              href={getPostUrlBySlug(post.data.nextSlug)}
+              class="items-center flex gap-2 w-1/2 p-2 rounded-lg bg-background/60 hover:bg-foreground/5 transition-all duration-300" 
+            >
+              <span class="line-clamp-2 font-semibold">
+                {post.data.nextTitle}
+              </span>
+              <ChevronRight size={24} />
+            </a>
+          ) : (
+            <div class="flex w-1/2" />
+          )}
+        </section>
+      )
+    }
     <GiscusComment client:only="react" />
     <div class="text-sm text-gray-700 dark:text-gray-300">
       <a

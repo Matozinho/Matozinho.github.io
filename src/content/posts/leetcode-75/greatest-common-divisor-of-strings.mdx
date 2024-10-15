@@ -1,0 +1,162 @@
+---
+publishedAt: 2023-10-13
+updatedAt: 2023-10-13
+title: "LeetCode 1071: Greatest Common Divisor of Strings"
+description: "Exploring solutions to LeetCode's 'Greatest Common Divisor of Strings' problem using Rust."
+slug: "greatest-common-divisor-of-strings"
+tags: ["rust", "algorithms"]
+categories: ["leetcode"]
+series: "leetcode-75"
+---
+
+## Problem: Greatest Common Divisor of Strings
+
+LeetCode problem 1071, **Greatest Common Divisor of Strings**, involves determining the largest string `x` that can divide both input strings `str1` and `str2`. In simpler terms, we need to find the largest string that can be repeated to construct both input strings.
+
+The formal problem definition is as follows:
+
+Given two strings `str1` and `str2`, return the largest string `x` such that `x` divides both `str1` and `str2`. We say that string `t` divides string `s` if `s = t + t + t + ... + t` (i.e., `t` is concatenated with itself one or more times to make `s`).
+
+### Examples
+
+**Example 1**:
+- Input: `str1 = "ABCABC"`, `str2 = "ABC"`
+- Output: `"ABC"`
+
+**Example 2**:
+- Input: `str1 = "ABABAB"`, `str2 = "ABAB"`
+- Output: `"AB"`
+
+**Example 3**:
+- Input: `str1 = "LEET"`, `str2 = "CODE"`
+- Output: `""` (no common divisor)
+
+### Constraints
+
+- `1 <= str1.length, str2.length <= 1000`
+- Both strings consist of English uppercase letters.
+
+## Initial Approach
+
+My initial approach to solve this problem was fairly straightforward. The idea was to:
+1. Find a common substring between the two strings.
+2. Check if that substring divides both `str1` and `str2`.
+
+### First Implementation
+
+In the first implementation, I followed a brute-force strategy, where I iterated over potential substrings, starting from the largest possible, and checked if each substring could divide both `str1` and `str2`.
+
+Here's the code for the initial approach:
+
+```rust
+impl Solution {
+    pub fn gcd_of_strings(str1: String, str2: String) -> String {
+        if str1.eq(str2.as_str()) {
+            return str1;
+        }
+
+        let mut output = String::from("");
+
+        let str1_chars = str1.chars().collect::<Vec<char>>();
+        let str2_chars = str2.chars().collect::<Vec<char>>();
+
+        for i in (1..=str1.len().min(str2.len())).rev() {
+            let substring = String::from(&str1[..i]);
+
+            // If the substring length doesn't divide the strings' lengths, skip it.
+            if (str1.len() % substring.len() != 0) || (str2.len() % substring.len() != 0) {
+                continue;
+            }
+
+            // Validate if `str1` can be divided by the current substring.
+            if !str1_chars
+                .chunks(substring.len())
+                .all(|chunk| chunk == substring.chars().collect::<Vec<char>>())
+            {
+                continue;
+            }
+
+            // Validate if `str2` can be divided by the current substring.
+            if !str2_chars
+                .chunks(substring.len())
+                .all(|chunk| chunk == substring.chars().collect::<Vec<char>>())
+            {
+                continue;
+            }
+
+            output = String::from(substring);
+            break;
+        }
+
+        return output;
+    }
+}
+```
+### Explanation
+In this approach:
+
+- We first check if both strings are identical; if so, the common divisor is the string itself.
+- If the strings aren't identical, we iterate through the substrings of `str1` starting from the largest.
+- For each substring, we check if it divides both `str1` and `str2`. This is done by checking:
+    - Whether the substring's length divides the lengths of both strings.
+    - Whether the strings, when divided into chunks of the substring's length, are composed entirely of repetitions of the substring.
+
+If a common divisor is found, it's returned as the result.
+
+## Issues with the First Approach
+While this solution works, it has a few inefficiencies:
+
+- It requires repeatedly chunking the strings and comparing them, which increases both time and space complexity.
+- It's not the most optimal solution for larger inputs since the brute-force approach checks multiple possible substrings, which may not be necessary.
+
+## Optimized Approach
+After further analysis, I realized that the greatest common divisor (GCD) of two numbers could help optimize the problem. Instead of brute-forcing through all possible substrings, we can leverage the mathematical concept of GCD on the lengths of the strings.
+
+### Final Implementation
+Here’s the optimized solution using the GCD approach
+
+```rust
+impl Solution {
+    pub fn gcd_of_strings(str1: String, str2: String) -> String {
+        let concatenated1 = str1.clone() + &str2;
+        let concatenated2 = str2.clone() + &str1;
+
+        // If str1 + str2 != str2 + str1, no common divisor exists.
+        if !concatenated1.eq(&concatenated2) {
+            return String::from("");
+        }
+
+        // Find the GCD of the lengths of the two strings.
+        let strings_gcd = Self::gcd(str1.len(), str2.len());
+
+        // Return the substring from str1 that represents the GCD of the strings.
+        let output = String::from(&str1[..strings_gcd]);
+
+        return output;
+    }
+
+    fn gcd(a: usize, b: usize) -> usize {
+        if b > 0 {
+            Self::gcd(b, a % b)
+        } else {
+            a
+        }
+    }
+}
+```
+
+### Explanation
+This approach significantly improves efficiency:
+
+1. We first concatenate the two strings in both possible orders (`str1` + `str2` and `str2` + `str1`). If the concatenated strings aren't equal, then no common divisor exists.
+2. If the concatenated strings are equal, we calculate the GCD of their lengths.
+3. The substring of `str1` that spans up to the GCD of the two lengths is the greatest common divisor of the two strings.
+
+### GCD Function
+The GCD function is a classic implementation of Euclid's algorithm, which recursively finds the greatest common divisor of two integers.
+
+## Why This Solution Works
+The insight here is that if two strings can be concatenated in both orders (`str1` + `str2` and `str2` + `str1`), then they must share a common divisor. The GCD of the lengths of the strings gives us the length of the largest possible substring that can divide both strings.
+
+## Conclusion
+In summary, solving the Greatest Common Divisor of Strings problem can be approached in multiple ways. The brute-force method works but is inefficient for larger inputs. By leveraging the GCD of string lengths, we can significantly optimize the solution. This method reduces both time complexity and the amount of string manipulation required, resulting in a cleaner, faster solution.

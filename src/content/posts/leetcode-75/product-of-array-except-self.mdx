@@ -1,0 +1,168 @@
+---
+publishedAt: 2023-10-14
+updatedAt: 2023-10-13
+title: "LeetCode 238: Product of Array Except Self"
+description: "A deep dive into the solution for LeetCode's 'Product of Array Except Self' problem."
+slug: "product-of-array-except-self"
+tags: ["rust", "algorithms"]
+categories: ["leetcode"]
+series: "leetcode-75"
+---
+
+## Problem: Product of Array Except Self
+
+LeetCode problem 238, **Product of Array Except Self**, requires us to compute an output array such that each element at index `i` in the output array is the product of all elements of the input array `nums` except `nums[i]`. This needs to be done in **O(n)** time complexity and without using the division operation.
+
+### Problem Summary
+
+Given an integer array `nums`, return an array `answer` such that `answer[i]` is the product of all the elements of `nums` except `nums[i]`.
+
+#### Example 1:
+- Input: `nums = [1, 2, 3, 4]`
+- Output: `[24, 12, 8, 6]`
+  
+#### Example 2:
+- Input: `nums = [-1, 1, 0, -3, 3]`
+- Output: `[0, 0, 9, 0, 0]`
+
+#### Constraints:
+- `2 <= nums.length <= 10^5`
+- `-30 <= nums[i] <= 30`
+- The product of any prefix or suffix of `nums` is guaranteed to fit in a 32-bit integer.
+
+### Insights and Approach
+
+We can't use division, so a straightforward approach of dividing the total product by each element isn't viable. Instead, the key to solving this problem efficiently is to leverage **prefix** and **suffix** products.
+
+- **Prefix product**: The product of all elements before a given index.
+- **Suffix product**: The product of all elements after a given index.
+
+By precomputing prefix and suffix products, we can calculate the product of all elements except the current one for each index in linear time.
+
+## Initial Implementation
+
+My first approach involved using two arrays (`left_acumulator` and `right_acumulator`) to store the prefix and suffix products, respectively. Then, I computed the result using these arrays.
+
+### Code:
+
+```rust
+impl Solution {
+    pub fn product_except_self(nums: Vec<i32>) -> Vec<i32> {
+      let nums_len = nums.len();
+      let mut left_acumulator: Vec<i32> = Vec::with_capacity(nums_len);
+      let mut right_acumulator: Vec<i32> = Vec::with_capacity(nums_len);
+
+      left_acumulator.push(nums[0]);
+      right_acumulator.push(nums[nums_len - 1]);
+
+      for i in 1..nums_len {
+          let current_rev_idx = nums_len - 1 - i;
+          left_acumulator.push(left_acumulator[i - 1] * nums[i]);
+          right_acumulator.push(right_acumulator[i - 1] * nums[current_rev_idx]);
+      }
+      right_acumulator.reverse();
+
+      let mut output: Vec<i32> = Vec::with_capacity(nums_len);
+      output.push(right_acumulator[1]);
+      for i in 1..nums_len - 1 {
+          let left = left_acumulator[i - 1];
+          let right = right_acumulator[i + 1];
+          output.push(left * right);
+      }
+      output.push(left_acumulator[nums_len - 2]);
+
+      return output;
+    }
+}
+```
+
+### Explanation:
+1. Populate the `left_acumulator` with prefix products. Each element at index `i` contains the product of all elements before `nums[i]`.
+2. Populate the `right_acumulator` with suffix products, which stores the product of all elements after `nums[i]`.
+3. Combine the results from both accumulators to compute the final output. For each index `i`, the result is the product of `left_acumulator[i-1]` and `right_acumulator[i+1]`.
+
+### Issues with the First Approach:
+This approach uses` O(n)` space due to two auxiliary arrays (`left_acumulator` and `right_acumulator`).
+There is also a slight inefficiency caused by reversing the `right_acumulator` after populating it.
+
+## Optimized Implementation
+In the second implementation, I improved the code by removing the need to reverse the `right_acumulator`. I also preallocated arrays with the exact size required to avoid dynamic growing.
+
+```rust
+impl Solution {
+    pub fn product_except_self(nums: Vec<i32>) -> Vec<i32> {
+      let nums_len = nums.len();
+      let mut left_acumulator: Vec<i32> = vec![0; nums_len];
+      let mut right_acumulator: Vec<i32> = vec![0; nums_len];
+
+      left_acumulator[0] = nums[0];
+      right_acumulator[nums_len - 1] = nums[nums_len - 1];
+
+      for i in 1..nums_len {
+        let current_rev_idx = nums_len - 1 - i;
+        left_acumulator[i] = left_acumulator[i - 1] * nums[i];
+        right_acumulator[current_rev_idx] =
+        right_acumulator[current_rev_idx + 1] * nums[current_rev_idx];
+      }
+
+      let mut output: Vec<i32> = vec![0; nums_len];
+      output[0] = right_acumulator[1];
+      output[nums_len - 1] = left_acumulator[nums_len - 2];
+
+      for i in 1..nums_len - 1 {
+        let left = left_acumulator[i - 1];
+        let right = right_acumulator[i + 1];
+        output[i] = left * right;
+      }
+
+      return output;
+    }
+}
+```
+### Explanation:
+- **Prefix and Suffix Computation:** In this version, I compute the prefix and suffix products in the same manner but eliminate the need for reversing the suffix array by building it backward in-place.
+- **Efficiency:** Preallocating the arrays saves time, and this approach still computes the result in `O(n)` time with `O(n)` space complexity.
+
+### Issues with the Second Approach:
+While this solution improves clarity and avoids reversing the array, it still uses extra space due to the prefix and suffix arrays.
+
+## Further Optimized Approach
+For the third implementation, I aimed to minimize extra space usage by maintaining the prefix and suffix products in a single pass without storing separate arrays.
+
+```rust
+impl Solution {
+    pub fn product_except_self(nums: Vec<i32>) -> Vec<i32> {
+        let mut prefix = vec![1; nums.len()];
+        let mut result = vec![0; nums.len()];
+        let mut suffix = 1;
+
+        // Compute the prefix product.
+        for i in 1..nums.len() {
+            prefix[i] = prefix[i - 1] * nums[i - 1];
+        }
+
+        // Compute the result using the suffix product on the fly.
+        for i in (0..nums.len()).rev() {
+            result[i] = prefix[i] * suffix;
+            suffix *= nums[i];
+        }
+
+        return result;
+    }
+}
+```
+
+### Explanation:
+- **Prefix Product**: I first compute the prefix product for each element. Here, `prefix[i]` contains the product of all elements before index `i` (just like before).
+- **Suffix Product On-the-Fly**: Instead of storing the suffix products, I maintain a running `suffix` variable that holds the product of elements after the current index, updating it as I iterate from right to left.
+- **Single Pass**: By combining the prefix and suffix computation in one loop, the solution achieves `O(1)` extra space (excluding the result array).
+
+## Final Thoughts:
+This final approach is the most optimized solution as it:
+
+1. Runs in `O(n)` time complexity.
+2. Uses only `O(1)` extra space by avoiding the use of separate prefix and suffix arrays.
+3. Efficiently computes the product of all elements except the current one in two passes over the array (one for prefix and one for suffix).
+
+## Conclusion
+The Product of Array Except Self problem can be efficiently solved using prefix and suffix products. The final approach offers a clean and optimal solution with O(n) time complexity and O(1) extra space usage. By computing the prefix product first and then calculating the result with a running suffix product, we eliminate the need for extra space while still maintaining linear time efficiency.
