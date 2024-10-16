@@ -13,10 +13,11 @@ export const prerender = true;
 
 export async function getStaticPaths() {
   const blogsEntries = await getCollection("posts");
-  return blogsEntries.map((post) => ({
+  const posts = blogsEntries.map((post) => ({
     params: { slug: post.slug },
     props: { post },
   }));
+  return posts;
 }
 const { post } = Astro.props;
 const { Content } = await post.render();
