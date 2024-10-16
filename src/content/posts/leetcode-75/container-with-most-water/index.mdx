@@ -1,0 +1,148 @@
+---
+title: "LeetCode 11: Container With Most Water"
+description: "An exploration of the 'Container With Most Water' problem and an optimal solution using the two-pointer approach."
+publishedAt: 2023-10-15
+tags: ["rust", "algorithms"]
+categories: ["leetcode"]
+series: "leetcode-75"
+---
+
+## Problem: Container With Most Water
+
+LeetCode problem 11, **Container With Most Water**, asks us to find two vertical lines from an array of heights that form the container capable of holding the most water. The vertical lines are represented by their height and index on the x-axis.
+
+### Problem Description
+
+You are given an integer array `height` of length `n`, where the `i-th` vertical line is represented by the coordinates `(i, 0)` and `(i, height[i])`. The goal is to find two lines that together with the x-axis form a container that holds the maximum amount of water.
+
+#### Example 1:
+
+- Input: `height = [1,8,6,2,5,4,8,3,7]`
+- Output: `49`
+- **Explanation**: The lines at index 1 (`height[1] = 8`) and index 8 (`height[8] = 7`) form the container that holds the most water. The area is calculated as `min(8, 7) * (8 - 1) = 49`.
+
+#### Example 2:
+
+- Input: `height = [1,1]`
+- Output: `1`
+- **Explanation**: The only possible container holds `min(1, 1) * (1 - 0) = 1` unit of water.
+
+#### Constraints:
+- `2 <= height.length <= 10^5`
+- `0 <= height[i] <= 10^4`
+
+### Insights and Approach
+
+At first glance, you might think of simulating every possible pair of lines and calculating the area of water they can contain. However, this brute-force approach would take **O(n²)** time, which is inefficient for larger inputs.
+
+The key observation to optimize this problem is that:
+- The amount of water a container holds depends on the **shorter line** between the two.
+- To maximize the area, you should consider moving the pointers inward toward each other, starting with the widest possible container (first and last lines), and progressively narrowing the search space.
+
+This leads to an efficient **two-pointer approach** that reduces the time complexity to **O(n)**.
+
+## First Attempt (Wrong Approach)
+
+Initially, I tried to solve the problem by maintaining two pointers (`lower_bound` and `upper_bound`) and checking the area formed with each new line. I incorrectly attempted to update both pointers based on the areas formed by the new line, but this approach failed to optimize for the maximum area consistently.
+
+### Code:
+
+```rust
+impl Solution {
+    fn get_area(h1: i32, h2: i32, distance: usize) -> i32 {
+        let h = h1.min(h2);
+        return h * distance as i32;
+    }
+
+    pub fn max_area(height: Vec<i32>) -> i32 {
+        let mut lower_bound = 0;
+        let mut upper_bound = 1;
+
+        for i in 2..height.len() {
+            let lower_value = height[lower_bound];
+            let upper_value = height[upper_bound];
+            let current = height[i];
+
+            let area1 = Self::get_area(lower_value, upper_value, upper_bound - lower_bound);
+            let area2 = Self::get_area(lower_value, current, i - lower_bound);
+            let area3 = Self::get_area(upper_value, current, i - upper_bound);
+
+            if area3 > area2 && area3 > area1 {
+                lower_bound = upper_bound;
+                upper_bound = i;
+            } else if area2 > area3 && area2 > area1 {
+                upper_bound = i;
+            }
+        }
+
+        return Self::get_area(
+            height[lower_bound],
+            height[upper_bound],
+            upper_bound - lower_bound,
+        );
+    }
+}
+```
+
+### Explanation:
+In this approach:
+
+- I tried to calculate the area between three lines (`lower_bound`, `upper_bound`, and a new line `i`).
+- Depending on which area was the largest, I updated `lower_bound` or `upper_bound`.
+
+### Why This Approach Was Incorrect:
+- This method doesn't guarantee that the container with the widest width and highest possible height is considered, leading to incorrect results.
+- It focuses too much on comparing each new line's area instead of focusing on the maximum possible area with the shortest height and widest distance.
+
+## Optimal Approach (Two-Pointer Solution)
+The optimal approach is to use two pointers: one at the beginning (`lower_bound`) and one at the end (`upper_bound`) of the array. The idea is to:
+
+- Calculate the area formed between the lines at `lower_bound` and `upper_bound`.
+- Move the pointer pointing to the shorter line inward, because moving the taller line won't increase the area (the area is limited by the shorter line).
+
+## Code:
+
+```rust
+impl Solution {
+    pub fn max_area(height: Vec<i32>) -> i32 {
+        let mut lower_bound = 0;
+        let mut upper_bound = height.len() - 1;
+        let mut max_area = 0;
+
+        while lower_bound < upper_bound {
+            let h = i32::min(height[lower_bound], height[upper_bound]);
+            let width = (upper_bound - lower_bound) as i32;
+            let area = h * width;
+            max_area = i32::max(max_area, area);
+
+            // Move the pointer pointing to the shorter line
+            if height[lower_bound] < height[upper_bound] {
+                lower_bound += 1;
+            } else {
+                upper_bound -= 1;
+            }
+        }
+
+        max_area
+    }
+}
+```
+
+### Explanation:
+1. Start with two pointers: `lower_bound` at the start and `upper_bound` at the end of the array.
+2. Calculate the area between the two lines at the current pointers.
+  - The height is determined by the shorter line (`height[lower_bound]` and `height[upper_bound]`).
+  - The width is the distance between the two lines (`upper_bound` - `lower_bound`).
+3. Compare the current area with the maximum area seen so far, and update `max_area` if the current area is larger.
+4. Move the pointer that points to the shorter line inward. This is because the shorter line limits the amount of water the container can hold, and moving the taller line won't increase the area.
+
+### Why This Approach Works:
+- By starting with the widest container and progressively narrowing the width, the algorithm ensures that we consider the maximum possible area.
+- Since we only move the pointer pointing to the shorter line, we maximize the potential height while still reducing the width.
+- This ensures an `O(n)` time complexity, which is optimal for this problem.
+
+## Conclusion
+
+The Container With Most Water problem can be efficiently solved using a two-pointer approach. By systematically reducing the search space and always moving the pointer pointing to the shorter line, we ensure that we explore all possible containers and find the one that holds the most water.
+
+This approach guarantees `O(n)` time complexity, making it scalable for large input sizes, and is a great example of optimizing brute-force solutions through smart pointer manipulation.

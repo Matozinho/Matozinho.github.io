@@ -1,14 +1,15 @@
 ---
 import { Picture } from "astro:assets";
 import { getCollection } from "astro:content";
+import { PostMetadata } from "@/components/post-metadata";
+import { getPostUrlBySlug } from "@/lib/url-utils";
+import { ChevronLeft, ChevronRight, Menu } from "@carbon/icons-react";
 import { format, parseISO } from "date-fns";
 import readingTime from "reading-time";
 import Avatar from "../../assets/images/avatar.svg";
 import GiscusComment from "../../components/GiscusComment";
 import MainLayout from "../../layouts/MainLayout.astro";
-import { Badge } from "@/components/ui/badge";
-import { ChevronLeft, ChevronRight } from "@carbon/icons-react";
-import { getPostUrlBySlug } from "@/lib/url-utils";
+import type { BlogPost } from "@/content/config";
 export const prerender = true;
 
 export async function getStaticPaths() {
@@ -64,18 +65,7 @@ const { Content } = await post.render();
       </p>
     </div>
     <section class="flex w-full mt-3 justify-between">
-      <div class="flex gap-2">
-        {
-          post.data.categories.map((category) => (
-            <Badge className="cursor-pointer">{category}</Badge>
-          ))
-        }
-        {
-          post.data.tags.map((tag) => (
-            <Badge className="cursor-pointer">{tag}</Badge>
-          ))
-        }
-      </div>
+      <PostMetadata postData={post.data as BlogPost["data"]} />
     </section>
     <div class="w-full mt-2 prose dark:prose-invert max-w-none break-words">
       <h2>Description</h2>
@@ -88,7 +78,7 @@ const { Content } = await post.render();
           {post.data.prevSlug ? (
             <a
               href={getPostUrlBySlug(post.data.prevSlug)}
-              class="items-center flex gap-2 w-1/2 p-2 rounded-lg bg-background/60 hover:bg-foreground/5 transition-all duration-300" 
+              class="items-center flex gap-2 w-1/2 p-2 rounded-lg bg-background/60 hover:bg-foreground/5 transition-all duration-300"
             >
               <ChevronLeft size={24} />
               <span class="line-clamp-2 font-semibold">
@@ -102,7 +92,7 @@ const { Content } = await post.render();
           {post.data.nextSlug ? (
             <a
               href={getPostUrlBySlug(post.data.nextSlug)}
-              class="items-center flex gap-2 w-1/2 p-2 rounded-lg bg-background/60 hover:bg-foreground/5 transition-all duration-300" 
+              class="items-center flex gap-2 w-1/2 p-2 rounded-lg bg-background/60 hover:bg-foreground/5 transition-all duration-300"
             >
               <span class="line-clamp-2 font-semibold">
                 {post.data.nextTitle}
